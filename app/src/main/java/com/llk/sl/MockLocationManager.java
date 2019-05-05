@@ -92,6 +92,7 @@ public class MockLocationManager {
     }
 
     public void setLatLng(double lat, double lng){
+        toast("lat=" + lat + " lng=" + lng);
         mLat = lat;
         mLng = lng;
     }
@@ -115,7 +116,7 @@ public class MockLocationManager {
                         }
                         mLocationManager.setTestProviderLocation(GPD_PROVIDER_STR, mlocation);
 
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (Exception e) {
                         return;
                     }
