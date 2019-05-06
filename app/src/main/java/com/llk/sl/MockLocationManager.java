@@ -21,9 +21,11 @@ public class MockLocationManager {
     private MockLocationListener mMockLocationListener;
     private Context mContext;
 
-    private double mLat = 23.0643532636, mLng = 113.3869099617;
+    private double mLat, mLng;
 
     private boolean isStopMockLocation = false;
+
+    private boolean isInitOk = false;
 
     private final static String GPD_PROVIDER_STR = LocationManager.GPS_PROVIDER;
 
@@ -31,13 +33,14 @@ public class MockLocationManager {
         mContext = context;
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         mMockLocationListener = listener;
-        startMockLocation();
+        start();
     }
 
-    private void startMockLocation() {
+    private void start() {
         if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Log.w("llk", "GPS_PROVIDER disable!");
             toast("GPS_PROVIDER disable!");
+            isInitOk = false;
             return;
         }
 
@@ -59,32 +62,52 @@ public class MockLocationManager {
                 mLocationManager.setTestProviderStatus(GPD_PROVIDER_STR, LocationProvider.AVAILABLE, null, System.currentTimeMillis());
             }
 
-            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext,
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                toast("未获得定位权限");
-                return;
+            if (mLocationListener != null){
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    toast("未获得定位权限");
+                    return;
+                }
+
+                mLocationManager.requestLocationUpdates(GPD_PROVIDER_STR, 0, 0, mLocationListener);
             }
-            mLocationManager.requestLocationUpdates(GPD_PROVIDER_STR, 0, 0, mLocationListener);
 
             isStopMockLocation = false;
+
+            isInitOk = true;
         } catch (Exception e) {
             Log.e("llk", "initLocation: " + e.toString());
+            isInitOk = false;
         }
     }
 
-    public void stopMockLocation() {
+    public void pause() {
         isStopMockLocation = true;
+    }
+
+    public void resume(){
+        isStopMockLocation = false;
+    }
+
+    public boolean isLoop(){
+        return isStopMockLocation;
+    }
+
+    public void destory(){
+        isInitOk = false;
         if (mLocationManager != null) {
             try {
                 mLocationManager.removeTestProvider(GPD_PROVIDER_STR);
 
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
+                if (mLocationListener != null) {
+                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    mLocationManager.removeUpdates(mLocationListener);
                 }
-                mLocationManager.removeUpdates(mLocationListener);
             } catch (Exception e) {
                 Log.e("llk", "stopMockLocation: " + e.toString());
             }
@@ -92,9 +115,12 @@ public class MockLocationManager {
     }
 
     public void setLatLng(double lat, double lng){
-        toast("lat=" + lat + " lng=" + lng);
-        mLat = lat;
-        mLng = lng;
+        toast("更新 lat=" + lat + " lng=" + lng);
+        Log.i("llk", "转换前: lat=" + lat + " lng=" + lng);
+        GpsModel model = PositionUtil.bd09_To_Gps84(lat, lng);
+        mLat = model.getWgLat();
+        mLng = model.getWgLon();
+        Log.i("llk", "转换后: lat=" + mLat + " lng=" + mLng);
     }
 
     public void loopMockLocation(){
@@ -105,11 +131,8 @@ public class MockLocationManager {
                     Location mlocation = new Location(GPD_PROVIDER_STR);
                     mlocation.setLongitude(mLng);
                     mlocation.setLatitude(mLat);
-                    mlocation.setAltitude(10); //海拔
-                    mlocation.setTime(System.currentTimeMillis());
-                    mlocation.setBearing((float) 1.2);
-                    mlocation.setSpeed((float) 1.2);
-                    mlocation.setAccuracy((float) 1.2);
+                    mlocation.setAltitude(2.0); //海拔
+                    mlocation.setAccuracy(3.0f);
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                             mlocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
