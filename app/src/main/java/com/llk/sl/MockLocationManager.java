@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.tencent.mapsdk.raster.model.LatLng;
+
 
 public class MockLocationManager {
 
@@ -114,13 +116,12 @@ public class MockLocationManager {
         }
     }
 
-    public void setLatLng(double lat, double lng){
-        toast("更新 lat=" + lat + " lng=" + lng);
-        Log.i("llk", "转换前: lat=" + lat + " lng=" + lng);
-        GpsModel model = PositionUtil.bd09_To_Gps84(lat, lng);
-        mLat = model.getWgLat();
-        mLng = model.getWgLon();
-        Log.i("llk", "转换后: lat=" + mLat + " lng=" + mLng);
+    public void setLatLng(LatLng latLng){
+        LatLng ll = PositionUtil.gcj_To_Gps84(latLng.getLatitude(), latLng.getLongitude());
+        mLat = ll.getLatitude();
+        mLng = ll.getLongitude();
+        Log.i("llk", "更新 lat=" + mLat + " lng=" + mLng);
+        toast("更新 lat=" + mLat + " lng=" + mLng);
     }
 
     public void loopMockLocation(){
@@ -131,8 +132,11 @@ public class MockLocationManager {
                     Location mlocation = new Location(GPD_PROVIDER_STR);
                     mlocation.setLongitude(mLng);
                     mlocation.setLatitude(mLat);
-                    mlocation.setAltitude(2.0); //海拔
-                    mlocation.setAccuracy(3.0f);
+                    mlocation.setAltitude(2);
+                    mlocation.setTime(System.currentTimeMillis());
+                    mlocation.setBearing((float) 1.2);
+                    mlocation.setSpeed((float) 1.2);
+                    mlocation.setAccuracy((float) 1.2);
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                             mlocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
@@ -141,6 +145,7 @@ public class MockLocationManager {
 
                         Thread.sleep(500);
                     } catch (Exception e) {
+                        Log.e("llk", "error in loopMockLocatio, " + e.getLocalizedMessage());
                         return;
                     }
                 }
@@ -173,7 +178,7 @@ public class MockLocationManager {
         }
     };
 
-    private void toast(String msg){
+    public void toast(String msg){
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
