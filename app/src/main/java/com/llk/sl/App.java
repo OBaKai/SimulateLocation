@@ -3,6 +3,7 @@ package com.llk.sl;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -22,7 +23,11 @@ public class App extends Application {
         mC = this;
 
         Intent sI = new Intent(mC, MockService.class);
-        startService(sI);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForegroundService(sI);
+        }else {
+            startService(sI);
+        }
 
         MockLocationManager.getInstance().init(this);
     }

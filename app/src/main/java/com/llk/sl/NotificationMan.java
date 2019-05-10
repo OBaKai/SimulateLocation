@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +25,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  */
 public class NotificationMan {
 
-    private Context mC;
+    private Service mC;
     private NotificationManager mN;
 
     public static final String ACT_TOP = "com.llk.sl.ACT_TOP";
@@ -37,7 +38,7 @@ public class NotificationMan {
 
     private NotificationBtnCallBack mCallBack;
 
-    public NotificationMan(Context context, NotificationBtnCallBack callBack){
+    public NotificationMan(Service context, NotificationBtnCallBack callBack){
         mC = context;
         mN = (NotificationManager) mC.getSystemService(NOTIFICATION_SERVICE);
         mCallBack = callBack;
@@ -64,12 +65,16 @@ public class NotificationMan {
             mN.createNotificationChannel(channel);
         }
         mN.notify(NOTIFY_NUM, builder.build());
+        mC.startForeground(NOTIFY_NUM, builder.build());
     }
 
     public void destory(){
         mCallBack = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mC.stopForeground(true);
+        }
+        mN.cancelAll();
         mC.unregisterReceiver(mBC);
-        mN.cancel(NOTIFY_NUM);
     }
 
     private BroadcastReceiver mBC = new BroadcastReceiver() {
