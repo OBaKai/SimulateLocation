@@ -99,6 +99,9 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        stopService(new Intent(this, MockService.class));
+
         mockLocationManager.destory();
     }
 
