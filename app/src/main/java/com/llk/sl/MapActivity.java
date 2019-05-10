@@ -34,7 +34,7 @@ import com.tencent.tencentmap.mapsdk.map.UiSettings;
  */
 public class MapActivity extends Activity implements TencentMap.OnMapClickListener {
 
-    private MockLocationManager mockLocationManager;
+    private MockLocationManager mockLocationManager = MockLocationManager.getInstance();
 
     private LatLng mSelectLatlng;
 
@@ -64,7 +64,7 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
 
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermission();
         }
 
@@ -72,17 +72,18 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
         tv = findViewById(R.id.tv);
 
         tencentMap = mapView.getMap();
+        //中心湖
         tencentMap.setCenter(new LatLng(23.04833, 113.399242));
         tencentMap.setZoom(15);
         tencentMap.setOnMapClickListener(this);
         UiSettings uiSettings = mapView.getUiSettings();
         uiSettings.setZoomGesturesEnabled(true);
 
-        mockLocationManager = new MockLocationManager(this, new MockLocationManager.MockLocationListener() {
+        mockLocationManager.setMockLocationListener(new MockLocationManager.MockLocationListener() {
             @Override
             public void onLocationChanged(Location mlocal) {
                 String strResult =
-                                "latitude:" + mlocal.getLatitude() + "\r\n"
+                        "latitude:" + mlocal.getLatitude() + "\r\n"
                                 + "longitude:" + mlocal.getLongitude() + "\r\n"
                                 + "elapsedRealtimeNanos:" + mlocal.getElapsedRealtimeNanos() + "\r\n"
                                 + "time:" + mlocal.getTime() + "\r\n";

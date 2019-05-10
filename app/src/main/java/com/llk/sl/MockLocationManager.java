@@ -31,11 +31,25 @@ public class MockLocationManager {
 
     private final static String GPD_PROVIDER_STR = LocationManager.GPS_PROVIDER;
 
-    public MockLocationManager(Context context, MockLocationListener listener) {
+
+    public static MockLocationManager getInstance() {
+        return InnerHolder.mInstance;
+    }
+
+    private static class InnerHolder {
+        private static MockLocationManager mInstance = new MockLocationManager();
+    }
+
+    private MockLocationManager() {}
+
+    public void init(Context context){
         mContext = context;
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        mMockLocationListener = listener;
         start();
+    }
+
+    public void setMockLocationListener(MockLocationListener listener) {
+        mMockLocationListener = listener;
     }
 
     private void start() {
