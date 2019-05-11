@@ -21,14 +21,6 @@ public class App extends Application {
         super.onCreate();
         Log.d("llk", "onCreate in Application");
         mC = this;
-
-        Intent sI = new Intent(mC, MockService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(sI);
-        }else {
-            startService(sI);
-        }
-
         MockLocationManager.getInstance().init(this);
     }
 

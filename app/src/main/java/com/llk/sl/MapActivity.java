@@ -62,10 +62,18 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_main);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermission();
+        }
+
+        setContentView(R.layout.act_main);
+
+        Intent sI = new Intent(this, MockService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForegroundService(sI);
+        }else {
+            startService(sI);
         }
 
         mapView = findViewById(R.id.mapview);
@@ -99,7 +107,6 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         stopService(new Intent(this, MockService.class));
 
         mockLocationManager.destory();
