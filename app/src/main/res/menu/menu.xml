@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@mipmap/icon_search"
+        android:title="搜索"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_collect"
+        android:icon="@mipmap/icon_collect"
+        android:title="收藏"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_open_window"
+        android:title="打开悬浮窗"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/action_close_window"
+        android:title="关闭悬浮窗"
+        app:showAsAction="never"
+        />
+
+</menu>

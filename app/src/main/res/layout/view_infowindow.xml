@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/infowindow_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="125dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_infowindow"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/left_ms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:text="经纬度："
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/tv_longitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="200dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="0dp"
+            android:textColor="#000000"
+            android:text="123456"
+            />
+
+        <TextView
+            android:id="@+id/tv_latitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="200dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="0dp"
+            android:textColor="#000000"
+            android:text="123456"/>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_collect"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="收藏"
+                android:textColor="#000000"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/btn_through"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:text="开飞机到这里"
+                android:textColor="#000000"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="115dp"
+        android:src="@mipmap/navi_icon"
+        />
+
+</RelativeLayout>

@@ -1,55 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
-    <com.tencent.tencentmap.mapsdk.map.MapView
-        android:id="@+id/mapview"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:title="模拟定位"
+        app:titleTextColor="#ffffff"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/btn_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="开始"
-            android:id="@+id/btn_start"
-            android:enabled="true"
-            android:onClick="startMock"
+        <com.tencent.tencentmap.mapsdk.map.MapView
+            android:id="@+id/mapview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <LinearLayout
+            android:id="@+id/layout1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btn_stop"
-            android:text="停止"
-            android:enabled="false"
-            android:onClick="stopMock"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="开始"
+                android:id="@+id/btn_start"
+                android:enabled="true"
+                android:onClick="startMock"
+                />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_stop"
+                android:text="停止"
+                android:enabled="false"
+                android:onClick="stopMock"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_below="@id/layout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="你好啊小老弟"
+            android:textColor="@color/colorAccent"
             />
 
-        <!--<Button-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="收藏 >"-->
-            <!--android:onClick="more"-->
-            <!--/>-->
-    </LinearLayout>
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/tv"
-        android:layout_below="@id/btn_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="你好啊小老弟"
-        android:textColor="@color/colorAccent"
-        />
-</RelativeLayout>
+</LinearLayout>

@@ -1,8 +1,9 @@
-package com.llk.sl;
+package com.llk.sl.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,10 +15,25 @@ import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.llk.sl.MockLocationManager;
+import com.llk.sl.MockService;
+import com.llk.sl.PermissionUtil;
+import com.llk.sl.R;
+import com.llk.sl.db.CollectDao;
+import com.llk.sl.eventbus.CollectEvent;
 import com.tencent.mapsdk.raster.model.BitmapDescriptorFactory;
 import com.tencent.mapsdk.raster.model.LatLng;
 import com.tencent.mapsdk.raster.model.Marker;
@@ -26,17 +42,26 @@ import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 import com.tencent.tencentmap.mapsdk.map.UiSettings;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 /**
  * author:
  * group:
  * createDate:
  * detail:
  */
-public class MapActivity extends Activity implements TencentMap.OnMapClickListener {
+public class MapActivity extends BaseActivity implements TencentMap.OnMapClickListener {
 
     private MockLocationManager mockLocationManager = MockLocationManager.getInstance();
 
     private LatLng mSelectLatlng;
+
+    private Toolbar toolbar;
+
+    private View infoWindowView;
+    private TextView longitude;
+    private TextView latitude;
 
     private MapView mapView;
     private TencentMap tencentMap;
@@ -76,6 +101,8 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
             startService(sI);
         }
 
+        initToolbar();
+
         mapView = findViewById(R.id.mapview);
         tv = findViewById(R.id.tv);
 
@@ -102,6 +129,83 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
                 mH.sendMessage(msg);
             }
         });
+
+        // 初始化数据库
+        CollectDao.getInstance().initDB(this);
+        initInfoView();
+    }
+
+    private void initToolbar() {
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_search:
+
+                        break;
+                    case R.id.action_collect:
+                        Intent intent = new Intent(MapActivity.this, CollectActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_open_window:
+
+                        break;
+                    case R.id.action_close_window:
+
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    private void initInfoView() {
+        infoWindowView = LayoutInflater.from(this).inflate(R.layout.view_infowindow, null, false);
+        longitude = infoWindowView.findViewById(R.id.tv_longitude);
+        latitude = infoWindowView.findViewById(R.id.tv_latitude);
+
+        infoWindowView.findViewById(R.id.btn_collect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addCollect();
+            }
+        });
+
+        infoWindowView.findViewById(R.id.btn_through).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startMock(null);
+            }
+        });
+    }
+
+    private void addCollect() {
+        View collectView = LayoutInflater.from(this).inflate(R.layout.dialog_collect2, null);
+        final EditText noteEt = collectView.findViewById(R.id.modifyedittext);
+        TextView textView = collectView.findViewById(R.id.beizhu_textv);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        textView.setText("备注名：");
+        builder.setTitle("添加收藏");
+        builder.setView(collectView);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (TextUtils.isEmpty(noteEt.getText().toString().trim())) {
+                    Toast.makeText(MapActivity.this, "请输入备注名", Toast.LENGTH_LONG).show();
+                } else {
+                    CollectDao.getInstance().insert(noteEt.getText().toString().trim(), "", mSelectLatlng.getLatitude(), mSelectLatlng.getLongitude());
+                    Toast.makeText(MapActivity.this, "收藏成功", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("取消", null);
+        builder.show();
     }
 
     @Override
@@ -143,9 +247,10 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
         mockLocationManager.toast("停止干活");
     }
 
-//    public void more(View view) {
-//
-//    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(CollectEvent event) {
+//        LatLng latLng = new LatLng()
+    }
 
     @Override
     public void onMapClick(LatLng latLng) {
@@ -155,10 +260,13 @@ public class MapActivity extends Activity implements TencentMap.OnMapClickListen
 
         Marker marker = tencentMap.addMarker(new MarkerOptions()
                 .position(mSelectLatlng)
-                .anchor(0.5f, 0.5f)
-                .icon(BitmapDescriptorFactory
-                        .defaultMarker()));
+                .anchor(0.5f, 1.0f)
+                .icon(BitmapDescriptorFactory.defaultMarker())
+                .markerView(infoWindowView));
         marker.showInfoWindow();// 设置默认显示一个infoWindow
+
+        longitude.setText("longitude=" + latLng.getLongitude());
+        latitude.setText("latitude=" + latLng.getLatitude());
 
         mockLocationManager.setLatLng(mSelectLatlng);
     }
