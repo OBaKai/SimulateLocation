@@ -42,6 +42,7 @@ import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 import com.tencent.tencentmap.mapsdk.map.UiSettings;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -51,7 +52,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * createDate:
  * detail:
  */
-public class MapActivity extends BaseActivity implements TencentMap.OnMapClickListener {
+public class MapActivity extends AppCompatActivity implements TencentMap.OnMapClickListener {
 
     private MockLocationManager mockLocationManager = MockLocationManager.getInstance();
 
@@ -93,6 +94,8 @@ public class MapActivity extends BaseActivity implements TencentMap.OnMapClickLi
         }
 
         setContentView(R.layout.act_main);
+
+        EventBus.getDefault().register(this);
 
         Intent sI = new Intent(this, MockService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -213,6 +216,8 @@ public class MapActivity extends BaseActivity implements TencentMap.OnMapClickLi
         super.onDestroy();
         stopService(new Intent(this, MockService.class));
 
+        EventBus.getDefault().unregister(this);
+
         mockLocationManager.destory();
     }
 
@@ -249,11 +254,12 @@ public class MapActivity extends BaseActivity implements TencentMap.OnMapClickLi
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(CollectEvent event) {
-//        LatLng latLng = new LatLng()
+        Log.i("MapActivity", "onMessageEvent!!!");
+        LatLng latLng = new LatLng(event.getLatitude(), event.getLongitude());
+        performMapClick(latLng);
     }
 
-    @Override
-    public void onMapClick(LatLng latLng) {
+    private void performMapClick(LatLng latLng) {
         mSelectLatlng = latLng;
 
         tencentMap.clearAllOverlays();
@@ -269,6 +275,11 @@ public class MapActivity extends BaseActivity implements TencentMap.OnMapClickLi
         latitude.setText("latitude=" + latLng.getLatitude());
 
         mockLocationManager.setLatLng(mSelectLatlng);
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        performMapClick(latLng);
     }
 
     @Override

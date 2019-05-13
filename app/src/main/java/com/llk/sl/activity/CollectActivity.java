@@ -24,7 +24,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CollectActivity extends BaseActivity {
+public class CollectActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private CollectAdapter adapter;
 
@@ -81,7 +81,8 @@ public class CollectActivity extends BaseActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EventBus.getDefault().post(new CollectEvent());
+                    EventBus.getDefault().post(new CollectEvent(collectModel.getLongitude(), collectModel.getLatitude()));
+                    CollectActivity.this.finish();
                 }
             });
 
