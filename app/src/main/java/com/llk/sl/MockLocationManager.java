@@ -135,7 +135,7 @@ public class MockLocationManager {
         mLat = ll.getLatitude();
         mLng = ll.getLongitude();
         Log.i("llk", "更新 lat=" + mLat + " lng=" + mLng);
-        toast("更新 lat=" + mLat + " lng=" + mLng);
+//        toast("更新 lat=" + mLat + " lng=" + mLng);
     }
 
     public void loopMockLocation(){

@@ -136,6 +136,13 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
         // 初始化数据库
         CollectDao.getInstance().initDB(this);
         initInfoView();
+
+//        CollectDao.getInstance().insert("百果园", "", 22.927907451526092, 113.35694742790618);
+//        CollectDao.getInstance().insert("奥园广场", "", 22.92640076089131, 113.35368990524276);
+//        CollectDao.getInstance().insert("西丽桥", "", 22.930119962910467, 113.3517465971646);
+//        CollectDao.getInstance().insert("花样年华", "", 22.928006441026284, 113.34649496932053);
+//        CollectDao.getInstance().insert("仲元", "", 22.933444318409506, 113.35464202480209);
+//        CollectDao.getInstance().insert("木偶娃娃", "", 23.059892204174144, 113.40226131327726);
     }
 
     private void initToolbar() {
@@ -263,6 +270,7 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
         mSelectLatlng = latLng;
 
         tencentMap.clearAllOverlays();
+        tencentMap.setCenter(new LatLng(latLng.getLatitude(), latLng.getLongitude()));
 
         Marker marker = tencentMap.addMarker(new MarkerOptions()
                 .position(mSelectLatlng)
