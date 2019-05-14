@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.llk.sl.MockLocationManager;
 import com.llk.sl.MockService;
+import com.llk.sl.floatwindow.LocationMoveManager;
 import com.llk.sl.floatwindow.MoveFloatWindowManager;
 import com.llk.sl.util.PermissionUtil;
 import com.llk.sl.R;
@@ -265,6 +266,8 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
             return;
         }
 
+        LocationMoveManager.getInstance().clear();
+        mockLocationManager.setLatLng(mSelectLatlng);
         mockLocationManager.resume();
         mockLocationManager.loopMockLocation();
 
@@ -290,8 +293,6 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
         performMapClick(latLng);
     }
 
-    private Marker marker;
-
     private void performMapMove(LatLng latLng) {
         mSelectLatlng = latLng;
 
@@ -307,8 +308,6 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
 
         longitude.setText("longitude=" + latLng.getLongitude());
         latitude.setText("latitude=" + latLng.getLatitude());
-
-        mockLocationManager.setLatLng(mSelectLatlng);
     }
 
     private void performMapClick(LatLng latLng) {
@@ -327,8 +326,6 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
 
         longitude.setText("longitude=" + latLng.getLongitude());
         latitude.setText("latitude=" + latLng.getLatitude());
-
-        mockLocationManager.setLatLng(mSelectLatlng);
     }
 
     @Override

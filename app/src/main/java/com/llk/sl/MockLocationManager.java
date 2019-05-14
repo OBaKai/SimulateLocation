@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.llk.sl.floatwindow.LocationMoveManager;
 import com.llk.sl.util.PositionUtil;
 import com.tencent.mapsdk.raster.model.LatLng;
 
@@ -145,8 +146,8 @@ public class MockLocationManager {
             public void run() {
                 while (!isStopMockLocation) {
                     Location mlocation = new Location(GPD_PROVIDER_STR);
-                    mlocation.setLongitude(mLng);
-                    mlocation.setLatitude(mLat);
+                    mlocation.setLongitude(mLng + LocationMoveManager.getInstance().getLongitude());
+                    mlocation.setLatitude(mLat + LocationMoveManager.getInstance().getLatitude());
                     mlocation.setAltitude(2);
                     mlocation.setTime(System.currentTimeMillis());
                     mlocation.setBearing((float) 1.2);
@@ -158,7 +159,7 @@ public class MockLocationManager {
                         }
                         mLocationManager.setTestProviderLocation(GPD_PROVIDER_STR, mlocation);
 
-                        Thread.sleep(500);
+                        Thread.sleep(100);
                     } catch (Exception e) {
                         Log.e("llk", "error in loopMockLocatio, " + e.getLocalizedMessage());
                         return;
