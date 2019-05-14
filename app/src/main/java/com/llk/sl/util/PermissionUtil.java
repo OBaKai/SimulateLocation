@@ -1,4 +1,4 @@
-package com.llk.sl;
+package com.llk.sl.util;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;

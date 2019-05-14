@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:title="设置"
+        app:titleTextColor="#ffffff"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="悬浮窗坐标（左下角为原点）:"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_marginLeft="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="x:"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            />
+
+        <EditText
+            android:id="@+id/float_window_x"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:text="650"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:text="y:"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            />
+
+        <EditText
+            android:id="@+id/float_window_y"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:text="80"
+            />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/float_window_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="确定"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        />
+
+</LinearLayout>

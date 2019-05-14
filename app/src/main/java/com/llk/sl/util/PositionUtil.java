@@ -1,4 +1,4 @@
-package com.llk.sl;
+package com.llk.sl.util;
 
 import com.tencent.mapsdk.raster.model.LatLng;
 

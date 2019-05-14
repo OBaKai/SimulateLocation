@@ -25,4 +25,10 @@
         app:showAsAction="never"
         />
 
+    <item
+        android:id="@+id/action_setting"
+        android:title="设置"
+        app:showAsAction="never"
+        />
+
 </menu>

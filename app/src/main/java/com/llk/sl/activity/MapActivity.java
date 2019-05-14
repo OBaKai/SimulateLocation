@@ -1,8 +1,6 @@
 package com.llk.sl.activity;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,13 +22,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.llk.sl.MockLocationManager;
 import com.llk.sl.MockService;
-import com.llk.sl.PermissionUtil;
+import com.llk.sl.floatwindow.MoveFloatWindowManager;
+import com.llk.sl.util.PermissionUtil;
 import com.llk.sl.R;
 import com.llk.sl.db.CollectDao;
 import com.llk.sl.eventbus.CollectEvent;
@@ -89,12 +87,26 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
         }, 0);
     }
 
+    /**
+     * android 6.0获取悬浮窗权限
+     */
+    private void requestFloatWindowPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new  Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                this.startActivityForResult(intent, 1);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermission();
+            requestFloatWindowPermission();
         }
 
         setContentView(R.layout.act_main);
@@ -168,10 +180,14 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
                         startActivity(intent);
                         break;
                     case R.id.action_open_window:
-
+                        MoveFloatWindowManager.getInstance().showFloatWindow();
                         break;
                     case R.id.action_close_window:
-
+                        MoveFloatWindowManager.getInstance().removeFloatWindow();
+                        break;
+                    case R.id.action_setting:
+                        Intent intent1 = new Intent(MapActivity.this, SettingActivity.class);
+                        startActivity(intent1);
                         break;
                     default:
                         break;

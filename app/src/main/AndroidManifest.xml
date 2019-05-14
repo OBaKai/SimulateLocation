@@ -19,6 +19,7 @@
     <!--获取 device id 辨别设备-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <!--腾讯地图 SDK 要求的权限(结束)-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:name=".App"
@@ -46,6 +47,9 @@
         </activity>
 
         <activity android:name=".activity.CollectActivity">
+        </activity>
+
+        <activity android:name=".activity.SettingActivity">
         </activity>
     </application>
 
