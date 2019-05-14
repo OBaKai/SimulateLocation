@@ -35,6 +35,7 @@ import com.llk.sl.R;
 import com.llk.sl.db.CollectDao;
 import com.llk.sl.eventbus.CollectEvent;
 import com.tencent.mapsdk.raster.model.BitmapDescriptorFactory;
+import com.tencent.mapsdk.raster.model.CameraPosition;
 import com.tencent.mapsdk.raster.model.LatLng;
 import com.tencent.mapsdk.raster.model.Marker;
 import com.tencent.mapsdk.raster.model.MarkerOptions;
@@ -53,6 +54,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * detail:
  */
 public class MapActivity extends AppCompatActivity implements TencentMap.OnMapClickListener {
+    private final String tag = this.getClass().getSimpleName();
 
     private MockLocationManager mockLocationManager = MockLocationManager.getInstance();
 
@@ -66,6 +68,8 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
 
     private MapView mapView;
     private TencentMap tencentMap;
+    // 用于app启动忽略第一次onCameraChangeFinish回调
+    private int cameraChangeFinishCount = 0;
 
     private TextView tv;
 
@@ -114,6 +118,17 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
         tencentMap.setCenter(new LatLng(23.04833, 113.399242));
         tencentMap.setZoom(15);
         tencentMap.setOnMapClickListener(this);
+        tencentMap.setOnMapCameraChangeListener(new TencentMap.OnMapCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                performMapMove(cameraPosition.getTarget());
+            }
+
+            @Override
+            public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                performMapMove(cameraPosition.getTarget());
+            }
+        });
         UiSettings uiSettings = mapView.getUiSettings();
         uiSettings.setZoomGesturesEnabled(true);
 
@@ -136,13 +151,6 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
         // 初始化数据库
         CollectDao.getInstance().initDB(this);
         initInfoView();
-
-//        CollectDao.getInstance().insert("百果园", "", 22.927907451526092, 113.35694742790618);
-//        CollectDao.getInstance().insert("奥园广场", "", 22.92640076089131, 113.35368990524276);
-//        CollectDao.getInstance().insert("西丽桥", "", 22.930119962910467, 113.3517465971646);
-//        CollectDao.getInstance().insert("花样年华", "", 22.928006441026284, 113.34649496932053);
-//        CollectDao.getInstance().insert("仲元", "", 22.933444318409506, 113.35464202480209);
-//        CollectDao.getInstance().insert("木偶娃娃", "", 23.059892204174144, 113.40226131327726);
     }
 
     private void initToolbar() {
@@ -261,9 +269,30 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(CollectEvent event) {
-        Log.i("MapActivity", "onMessageEvent!!!");
+        Log.i(tag, "onMessageEvent!!!");
         LatLng latLng = new LatLng(event.getLatitude(), event.getLongitude());
         performMapClick(latLng);
+    }
+
+    private Marker marker;
+
+    private void performMapMove(LatLng latLng) {
+        mSelectLatlng = latLng;
+
+        tencentMap.clearAllOverlays();
+
+        Marker marker = tencentMap.addMarker(new MarkerOptions()
+                .position(mSelectLatlng)
+                .anchor(0.5f, 1.0f)
+                .icon(BitmapDescriptorFactory.defaultMarker())
+                .markerView(infoWindowView));
+
+        marker.showInfoWindow();// 设置默认显示一个infoWindow
+
+        longitude.setText("longitude=" + latLng.getLongitude());
+        latitude.setText("latitude=" + latLng.getLatitude());
+
+        mockLocationManager.setLatLng(mSelectLatlng);
     }
 
     private void performMapClick(LatLng latLng) {
@@ -273,10 +302,11 @@ public class MapActivity extends AppCompatActivity implements TencentMap.OnMapCl
         tencentMap.setCenter(new LatLng(latLng.getLatitude(), latLng.getLongitude()));
 
         Marker marker = tencentMap.addMarker(new MarkerOptions()
-                .position(mSelectLatlng)
-                .anchor(0.5f, 1.0f)
-                .icon(BitmapDescriptorFactory.defaultMarker())
-                .markerView(infoWindowView));
+                    .position(mSelectLatlng)
+                    .anchor(0.5f, 1.0f)
+                    .icon(BitmapDescriptorFactory.defaultMarker())
+                    .markerView(infoWindowView));
+
         marker.showInfoWindow();// 设置默认显示一个infoWindow
 
         longitude.setText("longitude=" + latLng.getLongitude());
